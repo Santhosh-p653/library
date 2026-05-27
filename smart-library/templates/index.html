@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Library</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <nav>
+        <h2>📚 Smart Library</h2>
+        <a href="/saved">Saved Books</a>
+    </nav>
+
+    <div class="container">
+        <h1>Smart Library Management System</h1>
+
+        <div class="search-box">
+            <input type="text" id="searchInput" placeholder="Search books...">
+            <button id="searchBtn">Search</button>
+        </div>
+
+        <div id="results" class="results"></div>
+    </div>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

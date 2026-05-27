@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saved Books</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+    <nav>
+        <h2>📚 Saved Books</h2>
+        <a href="/">Home</a>
+    </nav>
+
+    <div class="container">
+        <h1 style="margin-bottom: 20px;">Your Saved Collection</h1>
+        <div class="results">
+            {% for book in books %}
+            <div class="book-card" id="book-{{ book.id }}">
+                <div class="book-content">
+                    <h3>{{ book.title }}</h3>
+                    <p>{{ book.author }}</p>
+                    <button class="delete-btn" onclick="deleteBook({{ book.id }})">Delete Book</button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script>
+        async function deleteBook(bookId) {
+            if (!confirm("Are you sure you want to remove this book?")) return;
+
+            try {
+                const response = await fetch(`/delete/${bookId}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+                
+                alert(data.message);
+                
+                // Dynamically remove the book element from the screen without reloading
+                document.getElementById(`book-${bookId}`).remove();
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Failed to delete book.");
+            }
+        }
+    </script>
+</body>
+</html>
