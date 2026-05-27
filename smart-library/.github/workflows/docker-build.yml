@@ -1,0 +1,36 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push Docker Image
+        # This tells the runner to go into your subfolder before running commands
+        working-directory: ./smart-library
+        run: |
+          # We use lowercase to avoid registry rejection
+          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/flask-library-app
+          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+          
+          docker build -t $IMAGE_ID:latest .
+          docker push $IMAGE_ID:latest
