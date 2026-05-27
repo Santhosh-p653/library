@@ -1,0 +1,40 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and Push
+        run: |
+          # Convert names to lowercase to satisfy GHCR requirements
+          OWNER_LOWER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          
+          # Set the image name
+          IMAGE_ID="ghcr.io/${OWNER_LOWER}/flask-library-app:latest"
+          
+          # BUILD: Note the './smart-library' at the end. 
+          # This tells Docker to look inside that folder for your Dockerfile and code.
+          docker build -t $IMAGE_ID ./smart-library
+          
+          # PUSH
+          docker push $IMAGE_ID
+          
