@@ -24,13 +24,20 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and Push Docker Image
-        # This tells the runner to go into your subfolder before running commands
-        working-directory: ./smart-library
-        run: |
-          # We use lowercase to avoid registry rejection
-          IMAGE_ID=ghcr.io/${{ github.repository_owner }}/flask-library-app
-          IMAGE_ID=$(echo $IMAGE_ID | tr '[A-Z]' '[a-z]')
+      - name: Build and Push
+        uses: docker/build-push-action@v5
+        with:
+          # context: This is the directory where your app lives.
+          # Docker will look here for requirements.txt and app.py
+          context: ./smart-library
           
-          docker build -t $IMAGE_ID:latest .
-          docker push $IMAGE_ID:latest
+          # file: The path to the Dockerfile relative to the repo root
+          file: ./smart-library/Dockerfile
+          
+          push: true
+          
+          # tags: We use lowercase here to avoid registry errors.
+          # This will name your package "flask-library-app"
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/flask-library-app:latest
+
